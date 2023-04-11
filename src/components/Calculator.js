@@ -30,11 +30,11 @@ export default function Calculator() {
 		var lastEl = screen[screen.length - 1];
 		const lastOperand = getPrevOperand(screen.length, screen);
 
-		// Check if the input is not empty and last element is not a decimal and not an operator
+		// Check if last element is not a decimal
 		if (lastEl != ".") {
 
 			// Check if the last operand already contains a decimal
-			// Will only accept input in false
+			// Will only accept input if false
 			var isDecimal = false;
 			for (let i = 0; i < lastOperand.op.length; i ++) {
 				if (lastOperand.op[i] == ".") {
@@ -49,11 +49,13 @@ export default function Calculator() {
 	}
 
 	function equal() {
-		const lastIn = screen[screen.length - 1];
+		// Check if last element on screen is a number
+		// Don't parse screen if it is... user input is not valid
+		const lastEl = screen[screen.length - 1];
 		var isValid = false;
 		const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 		for (let i = 0; i < nums.length; i ++) {
-			if (lastIn == nums[i]) {
+			if (lastEl == nums[i]) {
 				isValid = true;
 			}
 		}
@@ -63,7 +65,9 @@ export default function Calculator() {
 	}
 
 	function parse(prevScreen) {
+		// var screen is a new variable, not the current state
 		var screen = prevScreen;
+		// PEMDAS
 		screen = multiply(screen);
 		screen = divide(screen);
 		screen = add(screen);
@@ -73,7 +77,13 @@ export default function Calculator() {
 		}
 	}
 
+	// Operations
+	// The next four functions operate by iterating through the screen and finding the first instance of a certain operator
+	// Then math is performed on the operand immediately before and after that operator
+	// The functions are recursive
+
 	function multiply(prevScreen) {
+		// var screen is a new variable, not the current state
 		var screen = prevScreen;
 		for (let i = 0; i < screen.length; i ++) {
 			if (screen[i] == "\u00D7") {
@@ -98,6 +108,7 @@ export default function Calculator() {
 	}
 
 	function divide(prevScreen) {
+		// var screen is a new variable, not the current state
 		var screen = prevScreen;
 		for (let i = 0; i < screen.length; i ++) {
 			if (screen[i] == "/") {
@@ -122,6 +133,7 @@ export default function Calculator() {
 	}
 
 	function add(prevScreen) {
+		// var screen is a new variable, not the current state
 		var screen = prevScreen;
 		for (let i = 0; i < screen.length; i ++) {
 			if (screen[i] == "+") {
@@ -146,6 +158,7 @@ export default function Calculator() {
 	}
 
 	function subtract(prevScreen) {
+		// var screen is a new variable, not the current state
 		var screen = prevScreen;
 		for (let i = 1; i < screen.length; i ++) {
 			if (screen[i] == "-") {
@@ -169,7 +182,10 @@ export default function Calculator() {
 		return screen;
 	}
 
+	// This function gets the operand after a certain index
+	// The index that gets passed should always be an operator
 	function getNextOperand(index, prevScreen) {
+		// const screen is a new variable, not the current state
 		const screen = prevScreen;
 		// Index to track the end of the next operand
 		var end = index + 1;
@@ -199,7 +215,7 @@ export default function Calculator() {
 			end = screen.length - 1;
 		}
 
-		// Populate operand  string
+		// Populate operand string
 		for (let i = index + 1; i <= end; i ++) {
 			operand = operand + screen[i];
 		}
@@ -213,7 +229,10 @@ export default function Calculator() {
 		return operandObj;
 	}
 
+	// This function gets the operand before a certain index
+	// The index that gets passed should always be an operator or a decimal point
 	function getPrevOperand(index, prevScreen) {
+		// const screen is a new variable, not the current state
 		const screen = prevScreen;
 		// Index to track the start of the previous operand
 		var start = index - 1;
