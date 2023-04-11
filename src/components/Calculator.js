@@ -14,15 +14,19 @@ export default function Calculator() {
 
 	function inputOperator(val) {
 		const lastEl = screen[screen.length - 1];
-		if(screen != "" && screen != "." && lastEl != "+" && lastEl != "-" && lastEl != "\u00D7" && lastEl != "/") {
+		if(screen != "" && screen != "Error" && screen != "." && lastEl != "+" && lastEl != "-" && lastEl != "\u00D7" && lastEl != "/") {
 			update(val);
 		}
 	}
 
 	function backspace() {
-		const screenArr = Array.from(screen);
-		screenArr.pop();
-		setScreen(screenArr.join(""));
+		if (screen == "Error") {
+			setScreen("");
+		} else {
+			const screenArr = Array.from(screen);
+			screenArr.pop();
+			setScreen(screenArr.join(""));
+		}
 	}
 
 	function inputDecimal() {
