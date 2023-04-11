@@ -89,19 +89,18 @@ export default function Calculator() {
 			if (screen[i] == "\u00D7") {
 				const prevOperand = getPrevOperand(i, screen);
 				const nextOperand = getNextOperand(i, screen);
-				var newStr = "";
+				var newScreen = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
-				newStr = newStr + (Math.round((+prevOperand.op * +nextOperand.op) * 100000) / 100000);
+				newScreen = newScreen + (Math.round((+prevOperand.op * +nextOperand.op) * 100000) / 100000);
 				for (let i = nextOperand.endIndex + 1; i < screen.length; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
 				i = screen.length;
-				screen = newStr;
-				setScreen(newStr);
-				multiply(newStr);
+				setScreen(newScreen);
+				screen = multiply(newScreen);
 			}
 		}
 		return screen;
@@ -114,19 +113,18 @@ export default function Calculator() {
 			if (screen[i] == "/") {
 				const prevOperand = getPrevOperand(i, screen);
 				const nextOperand = getNextOperand(i, screen);
-				var newStr = "";
+				var newScreen = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
-				newStr = newStr + (Math.round((+prevOperand.op / +nextOperand.op) * 100000) / 100000);
+				newScreen = newScreen + (Math.round((+prevOperand.op / +nextOperand.op) * 100000) / 100000);
 				for (let i = nextOperand.endIndex + 1; i < screen.length; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
 				i = screen.length;
-				screen = newStr;
-				setScreen(newStr);
-				divide(newStr);
+				setScreen(newScreen);
+				screen = divide(newScreen);
 			}
 		}
 		return screen;
@@ -139,19 +137,18 @@ export default function Calculator() {
 			if (screen[i] == "+") {
 				const prevOperand = getPrevOperand(i, screen);
 				const nextOperand = getNextOperand(i, screen);
-				var newStr = "";
+				var newScreen = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
-				newStr = newStr + (Math.round((+prevOperand.op + +nextOperand.op) * 100000) / 100000);
+				newScreen = newScreen + (Math.round((+prevOperand.op + +nextOperand.op) * 100000) / 100000);
 				for (let i = nextOperand.endIndex + 1; i < screen.length; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
 				i = screen.length;
-				screen = newStr;
-				setScreen(newStr);
-				add(newStr);
+				setScreen(newScreen);
+				screen = add(newScreen);
 			}
 		}
 		return screen;
@@ -164,19 +161,18 @@ export default function Calculator() {
 			if (screen[i] == "-") {
 				const prevOperand = getPrevOperand(i, screen);
 				const nextOperand = getNextOperand(i, screen);
-				var newStr = "";
+				var newScreen = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
-				newStr = newStr + (Math.round((+prevOperand.op - +nextOperand.op) * 100000) / 100000);
+				newScreen = newScreen + (Math.round((+prevOperand.op - +nextOperand.op) * 100000) / 100000);
 				for (let i = nextOperand.endIndex + 1; i < screen.length; i ++) {
-						newStr = newStr + screen[i];
+						newScreen = newScreen + screen[i];
 				}
 				i = screen.length;
-				screen = newStr;
-				setScreen(newStr);
-				subtract(newStr);
+				setScreen(newScreen);
+				screen = subtract(newScreen);
 			}
 		}
 		return screen;
@@ -191,28 +187,18 @@ export default function Calculator() {
 		var end = index + 1;
 		// Define empty string for next operand
 		var operand = "";
-		// An array that will be used to check each element of the user input to find where the last operand starts
-		const nums = [".", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 		// Logic that checks every input and finds where the last operand starts by locating the most recent input that doesn't match array nums
-		for(let i = end; i < screen.length; i ++) {
-			for(let j = 0; j < nums.length; j ++) {
-				if(screen[i] == nums[j]) {
-					end ++;
-					j = nums.length;
-				} else if (j == nums.length - 1 && screen[i] != nums[j]) {
-					// Found an operator
-					// Decrement back to the end of the operand
-					end --;
-					i = nums.length;
-				}
+		for(let i = end; i <= screen.length; i ++) {
+			if (screen[i] == "+" || screen[i] == "-" || screen[i] == "\u00D7" || screen[i] == "/" || screen[i] == undefined) {
+				// Found an operand or end of string
+				// Decrement back to last digit in operand
+				end --;
+				// Break out of loop
+				i = screen.length;
+			} else {
+				end ++;
 			}
-		}
-
-		// Next operand is the last operand
-		// Decrement end index to keep index in bounds of array
-		if (end == screen.length) {
-			end = screen.length - 1;
 		}
 
 		// Populate operand string
@@ -242,17 +228,14 @@ export default function Calculator() {
 		const nums = [".", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 		// Logic that checks every input and finds where the last operand starts by locating the most recent input that doesn't match array nums
-		for(let i = start; i > 0; i --) {
-			for(let j = 0; j < nums.length; j ++) {
-				if(screen[i] == nums[j]) {
-					start --;
-					j = nums.length;
-				} else if (j == nums.length - 1 && screen[i] != nums[j]) {
-					// Found an operator
-					// Increment back to the start of the operand
-					start ++;
-					i = 0;
-				}
+		for(let i = start; i >= -1; i --) {
+			if (screen[i] == "+" || screen[i] == "-" || screen[i] == "\u00D7" || screen[i] == "/" || screen[i] == undefined) {
+				// Found an operator or start of string
+				// Increment back to first digit in operand
+				start ++;
+				i = -1;
+			} else {
+				start --;
 			}
 		}
 
@@ -266,6 +249,7 @@ export default function Calculator() {
 			startIndex: start,
 			endIndex: index - 1
 		};
+
 		return operandObj;
 	}
 
