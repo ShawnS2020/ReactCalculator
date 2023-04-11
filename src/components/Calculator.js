@@ -28,7 +28,7 @@ export default function Calculator() {
 	function inputDecimal() {
 		// Last character on the screen
 		var lastEl = screen[screen.length - 1];
-		const lastOperand = getPrevOperand(screen.length);
+		const lastOperand = getPrevOperand(screen.length, screen);
 
 		// Check if the input is not empty and last element is not a decimal and not an operator
 		if (lastEl != ".") {
@@ -58,25 +58,27 @@ export default function Calculator() {
 			}
 		}
 		if (isValid == true) {
-			parse();
+			parse(screen);
 		}
 	}
 
-	function parse() {
-		multiply();
-		divide();
-		add();
-		subtract();
+	function parse(prevScreen) {
+		var screen = prevScreen;
+		screen = multiply(screen);
+		screen = divide(screen);
+		screen = add(screen);
+		screen = subtract(screen);
 		if (screen == "Infinity" || screen == "NaN") {
 			setScreen("Error");
 		}
 	}
 
-	function multiply() {
+	function multiply(prevScreen) {
+		var screen = prevScreen;
 		for (let i = 0; i < screen.length; i ++) {
 			if (screen[i] == "\u00D7") {
-				const prevOperand = getPrevOperand(i);
-				const nextOperand = getNextOperand(i);
+				const prevOperand = getPrevOperand(i, screen);
+				const nextOperand = getNextOperand(i, screen);
 				var newStr = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
@@ -87,17 +89,20 @@ export default function Calculator() {
 						newStr = newStr + screen[i];
 				}
 				i = screen.length;
+				screen = newStr;
 				setScreen(newStr);
-				multiply();
+				multiply(newStr);
 			}
 		}
+		return screen;
 	}
 
-	function divide() {
+	function divide(prevScreen) {
+		var screen = prevScreen;
 		for (let i = 0; i < screen.length; i ++) {
 			if (screen[i] == "/") {
-				const prevOperand = getPrevOperand(i);
-				const nextOperand = getNextOperand(i);
+				const prevOperand = getPrevOperand(i, screen);
+				const nextOperand = getNextOperand(i, screen);
 				var newStr = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
@@ -108,17 +113,20 @@ export default function Calculator() {
 						newStr = newStr + screen[i];
 				}
 				i = screen.length;
+				screen = newStr;
 				setScreen(newStr);
-				divide();
+				divide(newStr);
 			}
 		}
+		return screen;
 	}
 
-	function add() {
+	function add(prevScreen) {
+		var screen = prevScreen;
 		for (let i = 0; i < screen.length; i ++) {
 			if (screen[i] == "+") {
-				const prevOperand = getPrevOperand(i);
-				const nextOperand = getNextOperand(i);
+				const prevOperand = getPrevOperand(i, screen);
+				const nextOperand = getNextOperand(i, screen);
 				var newStr = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
@@ -129,17 +137,20 @@ export default function Calculator() {
 						newStr = newStr + screen[i];
 				}
 				i = screen.length;
+				screen = newStr;
 				setScreen(newStr);
-				add();
+				add(newStr);
 			}
 		}
+		return screen;
 	}
 
-	function subtract() {
+	function subtract(prevScreen) {
+		var screen = prevScreen;
 		for (let i = 1; i < screen.length; i ++) {
 			if (screen[i] == "-") {
-				const prevOperand = getPrevOperand(i);
-				const nextOperand = getNextOperand(i);
+				const prevOperand = getPrevOperand(i, screen);
+				const nextOperand = getNextOperand(i, screen);
 				var newStr = "";
 
 				for (let i = 0; i < prevOperand.startIndex; i ++) {
@@ -150,13 +161,16 @@ export default function Calculator() {
 						newStr = newStr + screen[i];
 				}
 				i = screen.length;
+				screen = newStr;
 				setScreen(newStr);
-				subtract();
+				subtract(newStr);
 			}
 		}
+		return screen;
 	}
 
-	function getNextOperand(index) {
+	function getNextOperand(index, prevScreen) {
+		const screen = prevScreen;
 		// Index to track the end of the next operand
 		var end = index + 1;
 		// Define empty string for next operand
@@ -199,7 +213,8 @@ export default function Calculator() {
 		return operandObj;
 	}
 
-	function getPrevOperand(index) {
+	function getPrevOperand(index, prevScreen) {
+		const screen = prevScreen;
 		// Index to track the start of the previous operand
 		var start = index - 1;
 		// Define empty string for previous operand
